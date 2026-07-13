@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Manrope", sans-serif;
+}
+
+@layer base {
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
+}
+
+/* Custom scrollbar for mobile horizontal tables */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 4px;
+}
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: #005997;
+  border-radius: 10px;
+}

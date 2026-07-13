@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global Helpers
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    // User Profile Validation
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['name', 'totalScore', 'updatedAt']) &&
+             data.keys().size() == 3 &&
+             data.name is string && data.name.size() <= 100 &&
+             data.totalScore is number && data.totalScore >= 0 &&
+             data.updatedAt == request.time;
+    }
+
+    match /users/{userId} {
+      allow list: if true; // Public leaderboard
+      allow get: if isSignedIn();
+      allow create: if isOwner(userId) && request.auth.token.email_verified == true && isValidUserProfile(incoming());
+      allow update: if isOwner(userId) && request.auth.token.email_verified == true && isValidUserProfile(incoming()) && (
+        // Only allow score and update time changes
+        incoming().diff(existing()).affectedKeys().hasOnly(['totalScore', 'updatedAt']) ||
+        // Also allow name change during initial setup or update
+        incoming().diff(existing()).affectedKeys().hasOnly(['name', 'totalScore', 'updatedAt'])
+      );
+
+      // Check-ins subcollection
+      match /checkins/{checkinId} {
+        function isValidCheckin(data) {
+          return data.keys().hasAll(['segmentId', 'timestamp']) &&
+                 data.keys().size() == 2 &&
+                 data.segmentId is string && data.segmentId.size() <= 50 &&
+                 data.timestamp == request.time;
+        }
+
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidCheckin(incoming());
+      }
+    }
+  }
+}

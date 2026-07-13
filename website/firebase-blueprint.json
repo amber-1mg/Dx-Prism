@@ -1,0 +1,52 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Store user's name and total score for the leaderboard.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Display name of the user."
+        },
+        "totalScore": {
+          "type": "number",
+          "description": "Total experience points earned."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last time the profile was updated."
+        }
+      },
+      "required": ["name", "totalScore", "updatedAt"]
+    },
+    "Checkin": {
+      "title": "Segment Check-in",
+      "description": "Tracks when a user visits a specific diagnostic segment.",
+      "type": "object",
+      "properties": {
+        "segmentId": {
+          "type": "string",
+          "description": "The ID of the segment visited."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the check-in occurred."
+        }
+      },
+      "required": ["segmentId", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Global user profiles for the leaderboard."
+    },
+    "/users/{userId}/checkins/{checkinId}": {
+      "schema": "Checkin",
+      "description": "Historic check-ins for individual users."
+    }
+  }
+}

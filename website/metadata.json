@@ -1,0 +1,8 @@
+{
+  "name": "Diagnostics Prism",
+  "description": "Sales training module for internal sales teams to understand diagnostic segments, clinical utility, and test details.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
